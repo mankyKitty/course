@@ -36,7 +36,5 @@ contains _ Empty = False
 contains a (Full z) = a == z
 
 instance P.Monad Optional where
-  (>>=) =
-    flip bindOptional
-  return =
-    Full
+  (>>=) = flip bindOptional
+  return = Full
