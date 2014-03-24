@@ -12,13 +12,11 @@ runId :: Id a -> a
 runId (Id a) = a
 
 mapId :: (a -> b) -> Id a -> Id b
-mapId f (Id a)    = Id (f a)
+mapId f (Id a) = Id (f a)
 
 bindId :: (a -> Id b) -> Id a -> Id b
 bindId f (Id a) = f a
 
 instance P.Monad Id where
-  (>>=) =
-    flip bindId
-  return =
-    Id
+  (>>=) = flip bindId
+  return = Id
