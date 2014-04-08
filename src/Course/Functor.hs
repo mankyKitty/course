@@ -93,13 +93,10 @@ void f = (\_ -> ()) <$> f
 -- >>> reverse <$> (putStr "hi" P.>> P.return ("abc" :: List Char))
 -- hi"cba"
 instance Functor IO where
-  (<$>) =
-    P.fmap
+  (<$>) = P.fmap
 
 instance Functor [] where
-  (<$>) =
-    P.fmap
+  (<$>) = P.fmap
 
 instance Functor P.Maybe where
-  (<$>) =
-    P.fmap
+  (<$>) = P.fmap

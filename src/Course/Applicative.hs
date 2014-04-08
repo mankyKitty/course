@@ -19,8 +19,7 @@ import Course.Optional
 import qualified Prelude as P
 
 class Apply f => Applicative f where
-  pure ::
-    a -> f a
+  pure :: a -> f a
 
 -- | Witness that all things with (<*>) and pure also have (<$>).
 --
@@ -32,13 +31,8 @@ class Apply f => Applicative f where
 --
 -- >>> (+1) <$> (1 :. 2 :. 3 :. Nil)
 -- [2,3,4]
-(<$>) ::
-  Applicative f =>
-  (a -> b)
-  -> f a
-  -> f b
-(<$>) =
-  error "todo"
+(<$>) :: Applicative f => (a -> b) -> f a -> f b
+(<$>) = error "todo"
 
 -- | Insert into Id.
 --
