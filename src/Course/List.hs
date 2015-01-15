@@ -18,7 +18,6 @@ import qualified System.Environment as E
 import qualified Prelude as P
 import qualified Numeric as N
 
-
 -- $setup
 -- >>> import Test.QuickCheck
 -- >>> import Course.Core(even, id, const)
@@ -40,8 +39,7 @@ instance Show t => Show (List t) where
   show = show . foldRight (:) []
 
 -- The list of integers from zero to infinity.
-infinity ::
-  List Integer
+infinity :: List Integer
 infinity =
   let inf x = x :. inf (x+1)
   in inf 0
@@ -203,19 +201,9 @@ flatMap f xs = flatten $ map f xs
 -- >>> seqOptional (Empty :. map Full infinity)
 -- Empty
 seqOptional :: List (Optional a) -> Optional (List a)
-seqOptional Nil = Empty
-seqOptional xs = if hasEmpty xs
-                    then Empty
-                    else Full $ getInnards xs
-  where
-        hasEmpty Nil = False
-        hasEmpty (Empty :. _) = True
-        hasEmpty ((Full _) :. ys) = hasEmpty ys
-
-        getInnards :: List (Optional a) -> List a
-        getInnards Nil = Nil
-        getInnards (Empty :. _) = Nil
-        getInnards ((Full n) :. ns) = n :. getInnards ns
+seqOptional Nil            = Full Nil
+seqOptional (Empty :. _)   = Empty
+seqOptional (Full a :. xs) = mapOptional (a:.) $ seqOptional xs
 
 -- | Find the first element in the list matching the predicate.
 --
@@ -251,7 +239,8 @@ find f (x :. xs) = if f x then Full x else find f xs
 -- >>> lengthGT4 infinity
 -- True
 lengthGT4 :: List a -> Bool
-lengthGT4 = (>4) . length
+lengthGT4 (_:._:._:._:._:._) = True
+lengthGT4 _ = False
 
 -- | Reverse a list.
 --
@@ -285,7 +274,7 @@ produce f s = s :. (produce f (f s))
 --
 -- prop> let types = x :: Int in notReverse (x :. Nil) == x :. Nil
 notReverse :: List a -> List a
-notReverse = id
+notReverse xs = xs
 
 hlist :: List a -> [a]
 hlist = foldRight (:) []
