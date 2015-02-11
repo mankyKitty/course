@@ -114,9 +114,13 @@ replicateA n xs = replicate n <$> xs
 --
 -- >>> filtering (>) (4 :. 5 :. 6 :. 7 :. 8 :. 9 :. 10 :. 11 :. 12 :. Nil) 8
 -- [9,10,11,12]
+
 filtering :: Applicative f => (a -> f Bool) -> List a -> f (List a)
-filtering f Nil = return Nil
-filtering f xs = error "todo"
+filtering f xs = foldRight (\a acc -> 
+	lift2 (\ac b -> if b then a:.ac else ac) acc $ f a)
+	(pure Nil)
+	xs
+
 -----------------------
 -- SUPPORT LIBRARIES --
 -----------------------
