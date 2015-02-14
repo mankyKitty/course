@@ -45,7 +45,7 @@ instance Applicative Id where
 -- prop> pure x == x :. Nil
 instance Applicative List where
   pure = (:.Nil)
-  
+
 -- | Insert into an Optional.
 --
 -- prop> pure x == Full x
@@ -116,10 +116,9 @@ replicateA n xs = replicate n <$> xs
 -- [9,10,11,12]
 
 filtering :: Applicative f => (a -> f Bool) -> List a -> f (List a)
-filtering f xs = foldRight (\a acc -> 
-	lift2 (\ac b -> if b then a:.ac else ac) acc $ f a)
-	(pure Nil)
-	xs
+filtering f = foldRight (\a acc -> lift2 (g a) acc $ f a) (pure Nil)
+  where
+    g a acc b = if b then a :. acc else acc
 
 -----------------------
 -- SUPPORT LIBRARIES --

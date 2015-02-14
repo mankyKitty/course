@@ -62,8 +62,7 @@ infixr 1 =<<
   f (a -> b)
   -> f a
   -> f b
-(<*>) =
-  error "todo"
+(<*>) g a = (\f -> f <$> a) =<< g
 
 infixl 4 <*>
 
@@ -72,32 +71,30 @@ infixl 4 <*>
 -- >>> (\x -> Id(x+1)) =<< Id 2
 -- Id 3
 instance Bind Id where
-  (=<<) =
-    error "todo"
+  f =<< (Id a) = f a
 
 -- | Binds a function on a List.
 --
 -- >>> (\n -> n :. n :. Nil) =<< (1 :. 2 :. 3 :. Nil)
 -- [1,1,2,2,3,3]
 instance Bind List where
-  (=<<) =
-    error "todo"
+  _ =<< Nil = Nil
+  f =<< (x:.xs) = f x ++ (f =<< xs)
 
 -- | Binds a function on an Optional.
 --
 -- >>> (\n -> Full (n + n)) =<< Full 7
 -- Full 14
 instance Bind Optional where
-  (=<<) =
-    error "todo"
+  _ =<< Empty = Empty
+  f =<< (Full a) = f a
 
 -- | Binds a function on the reader ((->) t).
 --
 -- >>> ((*) =<< (+10)) 7
 -- 119
 instance Bind ((->) t) where
-  (=<<) =
-    error "todo"
+  f =<< g = \t -> f (g t) t
 
 -- | Flattens a combined structure to a single structure.
 --
@@ -112,12 +109,8 @@ instance Bind ((->) t) where
 --
 -- >>> join (+) 7
 -- 14
-join ::
-  Bind f =>
-  f (f a)
-  -> f a
-join =
-  error "todo"
+join :: Bind f => f (f a) -> f a
+join = (id =<<)
 
 -- | Implement a flipped version of @(=<<)@, however, use only
 -- @join@ and @(<$>)@.
@@ -125,13 +118,8 @@ join =
 --
 -- >>> ((+10) >>= (*)) 7
 -- 119
-(>>=) ::
-  Bind f =>
-  f a
-  -> (a -> f b)
-  -> f b
-(>>=) =
-  error "todo"
+(>>=) :: Bind f => f a -> (a -> f b) -> f b
+a >>= f = join $ f <$> a
 
 infixl 1 >>=
 
@@ -140,14 +128,8 @@ infixl 1 >>=
 --
 -- >>> ((\n -> n :. n :. Nil) <=< (\n -> n+1 :. n+2 :. Nil)) 1
 -- [2,2,3,3]
-(<=<) ::
-  Bind f =>
-  (b -> f c)
-  -> (a -> f b)
-  -> a
-  -> f c
-(<=<) =
-  error "todo"
+(<=<) :: Bind f => (b -> f c) -> (a -> f b) -> a -> f c
+bc <=< ab = (bc =<<) . ab
 
 infixr 1 <=<
 
